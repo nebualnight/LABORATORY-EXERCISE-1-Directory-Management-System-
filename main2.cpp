@@ -28,7 +28,7 @@ int getValidatedChoice(int minOption, int maxOption) {
 
 void listFiles() {
     std::cout << "[1] List All Files" << std::endl;
-    std::cout << "[2] List Files by Extension" << std::endl;
+    std::cout << "[2] List Files by Extensions" << std::endl;
     std::cout << "[3] List Files by Pattern" << std::endl;
 
     int choice = getValidatedChoice(1, 3);
@@ -66,24 +66,44 @@ void createDirectory() {
 
     if (!fs::exists(dirName)) {
         fs::create_directory(dirName);
-        std::cout << "Directory created successfully." << std::endl;
+        std::cout << "Directory \"" << dirName << "\" created successfully." << std::endl;
     } else {
-        std::cout << "Error: Directory already exists." << std::endl;
+        std::cout << "Directory \"" << dirName << "\" already exists." << std::endl;
     }
 }
 
 void changeDirectory() {
-    std::string path;
-    std::cout << "Enter directory path to change to: ";
-    std::cin >> path;
+    std::cout << "[1] Move to Parent Directory" << std::endl;
+    std::cout << "[2] Move to Root Directory" << std::endl;
+    std::cout << "[3] Enter Custom Path (e.g., \"C:\\Users\\Documents\")" << std::endl;
 
-    if (fs::exists(path) && fs::is_directory(path)) {
-        fs::current_path(path);
-        std::cout << "Directory changed to: " << fs::current_path() << std::endl;
-    } else {
-        std::cout << "Error: Directory does not exist." << std::endl;
+    int choice = getValidatedChoice(1, 3);
+    std::string path;
+
+    switch (choice) {
+        case 1:
+            fs::current_path(fs::current_path().parent_path());
+            std::cout << "Moved to parent directory: " << fs::current_path() << std::endl;
+            break;
+
+        case 2:
+            fs::current_path(fs::current_path().root_path());
+            std::cout << "Moved to root directory: " << fs::current_path() << std::endl;
+            break;
+
+        case 3:
+            std::cout << "Enter directory path to move to: ";
+            std::getline(std::cin >> std::ws, path);
+            if (fs::exists(path) && fs::is_directory(path)) {
+                fs::current_path(path);
+                std::cout << "Current Directory changed to: " << fs::current_path() << std::endl;
+            } else {
+                std::cout << "Error: Directory \"Invalid path\" not found!" << std::endl;
+            }
+            break;
     }
 }
+
 
 void mainMenu() {
     int option;
@@ -92,7 +112,7 @@ void mainMenu() {
         std::cout << "[1] List Files" << std::endl;
         std::cout << "[2] Create Directory" << std::endl;
         std::cout << "[3] Change Directory" << std::endl;
-        std::cout << "[4] Exit" << std::endl;
+        std::cout << "[4] Exit List Files" << std::endl;
 
         option = getValidatedChoice(1, 4);
 
